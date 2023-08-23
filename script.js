@@ -11,27 +11,13 @@ let pc2;
 startButton.addEventListener("click", startCall);
 hangupButton.addEventListener("click", hangupCall);
 
-async function startCall() {
-    startButton.disabled = true;
-    hangupButton.disabled = false;
 
-    // Get local video stream
-    try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localVideo.srcObject = localStream;
-    } catch (error) {
-        console.error("Error accessing local media:", error);
-        return;
-    }
 
-    // ... (same as before) ...
-
+// Add this section after the previous code
 const toggleCameraButton = document.getElementById("toggleCameraButton");
 let isCameraOn = true;
 
 toggleCameraButton.addEventListener("click", toggleCamera);
-
-// ... (same as before) ...
 
 async function toggleCamera() {
     if (localStream) {
@@ -48,8 +34,21 @@ async function toggleCamera() {
     }
 }
 
-// ... (same as before) ...
+// ... (remaining previous code) ...
 
+
+async function startCall() {
+    startButton.disabled = true;
+    hangupButton.disabled = false;
+
+    // Get local video stream
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localStream;
+    } catch (error) {
+        console.error("Error accessing local media:", error);
+        return;
+    }
 
     // Set up PeerConnection
     const configuration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
