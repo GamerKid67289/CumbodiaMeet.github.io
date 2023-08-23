@@ -9,6 +9,7 @@ let localStream;
 let remoteStream;
 let isCameraOn = true;
 let isMicMuted = false;
+let peerConnection;
 
 startButton.addEventListener('click', startCall);
 endButton.addEventListener('click', endCall);
@@ -21,7 +22,7 @@ async function startCall() {
         localVideo.srcObject = localStream;
 
         const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        const peerConnection = new RTCPeerConnection(configuration);
+        peerConnection = new RTCPeerConnection(configuration);
 
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
@@ -40,6 +41,7 @@ async function startCall() {
 
 function endCall() {
     // TODO: Close the connection and clean up resources
+    peerConnection.close();
     localStream.getTracks().forEach(track => track.stop());
     remoteStream.getTracks().forEach(track => track.stop());
     localVideo.srcObject = null;
