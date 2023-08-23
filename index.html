@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Chat</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- Include your CSS stylesheets here -->
 </head>
 <body>
-    <div class="video-container">
+    <h1>Video Chat</h1>
+    <div id="localVideoContainer">
         <video id="localVideo" autoplay muted></video>
+    </div>
+    <div id="remoteVideoContainer">
         <video id="remoteVideo" autoplay></video>
     </div>
-    <script src="/script.js"></script>
+    <div id="controls">
+        <button id="startCall">Start Call</button>
+        <button id="endCall">End Call</button>
+    </div>
+    <!-- Include your JavaScript scripts here -->
 </body>
 </html>
