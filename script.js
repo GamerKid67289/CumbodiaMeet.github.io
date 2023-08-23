@@ -24,6 +24,33 @@ async function startCall() {
         return;
     }
 
+    // ... (same as before) ...
+
+const toggleCameraButton = document.getElementById("toggleCameraButton");
+let isCameraOn = true;
+
+toggleCameraButton.addEventListener("click", toggleCamera);
+
+// ... (same as before) ...
+
+async function toggleCamera() {
+    if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (videoTrack) {
+            isCameraOn = !isCameraOn;
+            videoTrack.enabled = isCameraOn;
+            if (isCameraOn) {
+                toggleCameraButton.textContent = "Turn Off Camera";
+            } else {
+                toggleCameraButton.textContent = "Turn On Camera";
+            }
+        }
+    }
+}
+
+// ... (same as before) ...
+
+
     // Set up PeerConnection
     const configuration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
     pc1 = new RTCPeerConnection(configuration);
