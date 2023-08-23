@@ -2,46 +2,58 @@ const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 const startButton = document.getElementById('startButton');
 const endButton = document.getElementById('endButton');
+const toggleCameraButton = document.getElementById('toggleCameraButton');
+const toggleMicButton = document.getElementById('toggleMicButton');
+
 let localStream;
-let peerConnection;
+let remoteStream;
+let isCameraOn = true;
+let isMicMuted = false;
 
 startButton.addEventListener('click', startCall);
 endButton.addEventListener('click', endCall);
+toggleCameraButton.addEventListener('click', toggleCamera);
+toggleMicButton.addEventListener('click', toggleMic);
 
 async function startCall() {
     try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
-        peerConnection = new RTCPeerConnection();
+
+        const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const peerConnection = new RTCPeerConnection(configuration);
 
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
-        peerConnection.onicecandidate = event => {
-            if (event.candidate) {
-                // Send the candidate to the remote peer using signaling method
-            }
+        peerConnection.ontrack = (event) => {
+            remoteStream = event.streams[0];
+            remoteVideo.srcObject = remoteStream;
         };
 
-        peerConnection.ontrack = event => {
-            remoteVideo.srcObject = event.streams[0];
-        };
+        // TODO: Set up signaling and establish the connection
+        // This involves handling offers, answers, ICE candidates, etc.
 
-        // Create offer and set local description
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-
-        // Send the offer to the remote peer using signaling method
     } catch (error) {
-        console.error('Error starting call:', error);
+        console.error('Error starting the call:', error);
     }
 }
 
-async function endCall() {
+function endCall() {
+    // TODO: Close the connection and clean up resources
     localStream.getTracks().forEach(track => track.stop());
+    remoteStream.getTracks().forEach(track => track.stop());
     localVideo.srcObject = null;
     remoteVideo.srcObject = null;
-    peerConnection.close();
-    peerConnection = null;
 }
 
-// Signaling methods and handling remote offer/answer and ICE candidates should be implemented here
+function toggleCamera() {
+    isCameraOn = !isCameraOn;
+    localStream.getVideoTracks()[0].enabled = isCameraOn;
+    toggleCameraButton.textContent = isCameraOn ? 'Turn Off Camera' : 'Turn On Camera';
+}
+
+function toggleMic() {
+    isMicMuted = !isMicMuted;
+    localStream.getAudioTracks()[0].enabled = !isMicMuted;
+    toggleMicButton.textContent = isMicMuted ? 'Unmute Mic' : 'Mute Mic';
+}
