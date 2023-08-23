@@ -1,43 +1,55 @@
+/* Reset some default browser styles */
+body, h1, h2, h3, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
 }
 
-h1 {
-    color: #333;
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
 }
 
-#localVideo {
-    max-width: 100%;
-    border: 1px solid #ccc;
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
     background-color: white;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#remoteVideos {
+.video-container {
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+video {
+    max-width: 45%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.controls {
+    text-align: center;
 }
 
 button {
-    background-color: #007bff;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #333;
     color: white;
     border: none;
-    padding: 10px 20px;
     cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
+    margin: 0 0.5rem;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #555;
 }
