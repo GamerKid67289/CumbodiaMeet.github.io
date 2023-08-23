@@ -2,24 +2,19 @@ const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
 const startButton = document.getElementById("startButton");
 const hangupButton = document.getElementById("hangupButton");
+const toggleCameraButton = document.getElementById("toggleCameraButton"); // Add this line
 
 let localStream;
 let remoteStream;
 let pc1;
 let pc2;
+let isCameraOn = true; // Add this line
 
 startButton.addEventListener("click", startCall);
 hangupButton.addEventListener("click", hangupCall);
+toggleCameraButton.addEventListener("click", toggleCamera); // Add this line
 
-
-
-// Add this section after the previous code
-const toggleCameraButton = document.getElementById("toggleCameraButton");
-let isCameraOn = true;
-
-toggleCameraButton.addEventListener("click", toggleCamera);
-
-async function toggleCamera() {
+async function toggleCamera() { // Add this function
     if (localStream) {
         const videoTrack = localStream.getVideoTracks()[0];
         if (videoTrack) {
@@ -34,7 +29,8 @@ async function toggleCamera() {
     }
 }
 
-// ... (remaining previous code) ...
+// ... (previous code) ...
+
 
 
 async function startCall() {
