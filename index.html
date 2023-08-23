@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Video Call</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call Site</title>
+    <style>
+        video {
+            width: 100%;
+            max-width: 600px;
+        }
+    </style>
 </head>
 <body>
-<h1>Video Call</h1>
-<div id="video-container"></div>
-<script src="js/video.js"></script>
+    <h1>Video Call</h1>
+    <video id="localVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay></video>
+    <button id="startButton">Start Call</button>
+    <button id="hangupButton">Hang Up</button>
+
+    <script src="/script.js"></script>
 </body>
 </html>
