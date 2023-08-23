@@ -1,5 +1,5 @@
 const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
+const remoteVideosContainer = document.getElementById('remoteVideosContainer');
 const startButton = document.getElementById('startButton');
 const endButton = document.getElementById('endButton');
 const toggleCameraButton = document.getElementById('toggleCameraButton');
@@ -7,7 +7,6 @@ const toggleMicButton = document.getElementById('toggleMicButton');
 
 let localStream;
 let peer;
-let peerConnection;
 let isCameraOn = true;
 let isMicMuted = false;
 
@@ -22,25 +21,32 @@ async function startCall() {
         localVideo.srcObject = localStream;
 
         peer = new Peer(); // Create a new Peer instance
-        peer.on('open', () => {
-            // Display your own video and audio
-            const myVideoCall = peer.call(peer.id, localStream);
 
-            myVideoCall.on('stream', remoteStream => {
-                remoteVideo.srcObject = remoteStream;
-            });
-        });
+        // Display local video
+        const localVideoElement = document.createElement('video');
+        localVideoElement.srcObject = localStream;
+        localVideoElement.muted = true;
+        localVideoElement.play();
+        localVideo.appendChild(localVideoElement);
 
+        // Answer incoming calls and display remote videos
         peer.on('call', incomingCall => {
-            // Answer incoming calls and display remote video and audio
             incomingCall.answer(localStream);
-            incomingCall.on('stream', remoteStream => {
-                remoteVideo.srcObject = remoteStream;
-            });
+            handleIncomingCall(incomingCall);
         });
+
     } catch (error) {
         console.error('Error starting the call:', error);
     }
+}
+
+function handleIncomingCall(incomingCall) {
+    const remoteVideoElement = document.createElement('video');
+    incomingCall.on('stream', remoteStream => {
+        remoteVideoElement.srcObject = remoteStream;
+        remoteVideoElement.play();
+        remoteVideosContainer.appendChild(remoteVideoElement);
+    });
 }
 
 function endCall() {
@@ -52,8 +58,8 @@ function endCall() {
         localStream.getTracks().forEach(track => track.stop());
     }
 
-    localVideo.srcObject = null;
-    remoteVideo.srcObject = null;
+    localVideo.innerHTML = '';
+    remoteVideosContainer.innerHTML = '';
 }
 
 function toggleCamera() {
