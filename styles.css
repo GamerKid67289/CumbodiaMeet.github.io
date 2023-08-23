@@ -1,0 +1,9 @@
+#videos {
+    display: flex;
+    justify-content: space-around;
+}
+
+video {
+    max-width: 45%;
+    border: 1px solid #ccc;
+}
