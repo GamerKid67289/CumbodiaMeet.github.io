@@ -6,9 +6,6 @@ const toggleCameraButton = document.getElementById('toggleCameraButton');
 const toggleMicButton = document.getElementById('toggleMicButton');
 
 let localStream;
-let remoteStream;
-let isCameraOn = true;
-let isMicMuted = false;
 let peerConnection;
 
 startButton.addEventListener('click', startCall);
@@ -21,41 +18,55 @@ async function startCall() {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
 
-        const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        peerConnection = new RTCPeerConnection(configuration);
-
+        // Create peer connection and add local stream tracks
+        peerConnection = new RTCPeerConnection();
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
-        peerConnection.ontrack = (event) => {
-            remoteStream = event.streams[0];
-            remoteVideo.srcObject = remoteStream;
+        // TODO: Implement signaling for offer/answer and ICE candidates
+        // ...
+
+        peerConnection.ontrack = event => {
+            remoteVideo.srcObject = event.streams[0];
         };
 
-        // TODO: Set up signaling and establish the connection
-        // This involves handling offers, answers, ICE candidates, etc.
-
+        // Create and send offer to remote peer
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        // TODO: Send the offer to the remote peer
+        // ...
+        
     } catch (error) {
         console.error('Error starting the call:', error);
     }
 }
 
 function endCall() {
-    // TODO: Close the connection and clean up resources
-    peerConnection.close();
-    localStream.getTracks().forEach(track => track.stop());
-    remoteStream.getTracks().forEach(track => track.stop());
+    // Close the peer connection
+    if (peerConnection) {
+        peerConnection.close();
+    }
+
+    // Stop local media tracks
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+    }
+
     localVideo.srcObject = null;
     remoteVideo.srcObject = null;
 }
 
 function toggleCamera() {
-    isCameraOn = !isCameraOn;
-    localStream.getVideoTracks()[0].enabled = isCameraOn;
-    toggleCameraButton.textContent = isCameraOn ? 'Turn Off Camera' : 'Turn On Camera';
+    if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        videoTrack.enabled = !videoTrack.enabled;
+        toggleCameraButton.textContent = videoTrack.enabled ? 'Turn Off Camera' : 'Turn On Camera';
+    }
 }
 
 function toggleMic() {
-    isMicMuted = !isMicMuted;
-    localStream.getAudioTracks()[0].enabled = !isMicMuted;
-    toggleMicButton.textContent = isMicMuted ? 'Unmute Mic' : 'Mute Mic';
+    if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        audioTrack.enabled = !audioTrack.enabled;
+        toggleMicButton.textContent = audioTrack.enabled ? 'Mute Mic' : 'Unmute Mic';
+    }
 }
