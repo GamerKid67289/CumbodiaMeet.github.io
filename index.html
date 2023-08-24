@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cumbodia Meet</title>
-  <link rel="stylesheet" href="styles.css">
+    <title>Cumbodia Meet</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <div id="app">
-    <div id="localVideo"></div>
-    <div id="remoteVideos"></div>
-    <button id="joinButton">Join Call</button>
-    <button id="leaveButton">Leave Call</button>
-    <button id="toggleAudioButton">Mute Audio</button>
-    <button id="toggleVideoButton">Mute Video</button>
-  </div>
-  <script src="https://cdn.agora.io/sdk/release/AgoraRTC_N-4.3.0.js"></script>
-  <script src="app.js"></script>
+    <h1>Cumbodia Meet</h1>
+    <div id="localVideoContainer">
+        <video id="localVideo" autoplay muted></video>
+    </div>
+    <div id="remoteVideoContainer">
+        <video id="remoteVideo" autoplay></video>
+    </div>
+    <div id="chatContainer">
+        <div id="chatMessages"></div>
+        <input type="text" id="chatInput" placeholder="Type your message..." />
+        <button id="sendButton">Send</button>
+    </div>
+    <button id="toggleVideo">Toggle Video</button>
+    <button id="toggleMicrophone">Toggle Microphone</button>
+
+    <script src="app.js"></script>
 </body>
 </html>

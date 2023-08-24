@@ -1,107 +1,79 @@
-const APP_ID = '25540f7394b841d29dfe60b86c43a5eb';
-const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendButton = document.getElementById('sendButton');
+const toggleVideoButton = document.getElementById('toggleVideo');
+const toggleMicrophoneButton = document.getElementById('toggleMicrophone');
 
 let localStream;
-const remoteStreams = {};
+let peerConnection;
+let isVideoEnabled = true;
+let isMicrophoneEnabled = true;
 
-let isAudioMuted = false;
-let isVideoMuted = false;
-
-const localVideoContainer = document.getElementById('localVideo');
-const remoteVideosContainer = document.getElementById('remoteVideos');
-const joinButton = document.getElementById('joinButton');
-const leaveButton = document.getElementById('leaveButton');
-const toggleAudioButton = document.getElementById('toggleAudioButton');
-const toggleVideoButton = document.getElementById('toggleVideoButton');
-
-joinButton.addEventListener('click', joinCall);
-leaveButton.addEventListener('click', leaveCall);
-toggleAudioButton.addEventListener('click', toggleAudio);
-toggleVideoButton.addEventListener('click', toggleVideo);
-
-async function joinCall() {
-  try {
-    const uid = await client.join(APP_ID, 'myChannel', null);
-
-    localStream = AgoraRTC.createStream({
-      streamID: uid,
-      audio: true,
-      video: true,
-    });
-
-    await localStream.init();
-
-    localStream.play('localVideo');
-    client.publish(localStream);
-
-    client.on('stream-added', async (event) => {
-      const remoteStream = event.stream;
-      remoteStreams[remoteStream.getId()] = remoteStream;
-      await client.subscribe(remoteStream);
-      addRemoteVideo(remoteStream.getId());
-    });
-
-    client.on('stream-removed', (event) => {
-      const remoteStream = event.stream;
-      removeRemoteVideo(remoteStream.getId());
-    });
-  } catch (error) {
-    console.error('Error joining call:', error);
-  }
-}
-
-function leaveCall() {
-  if (localStream) {
-    localStream.stop();
-    client.unpublish(localStream);
-  }
-
-  for (const streamId in remoteStreams) {
-    if (remoteStreams.hasOwnProperty(streamId)) {
-      remoteStreams[streamId].stop();
-      removeRemoteVideo(streamId);
+async function getMediaStream() {
+    try {
+        const constraints = { video: isVideoEnabled, audio: isMicrophoneEnabled };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        localStream = stream;
+        localVideo.srcObject = stream;
+    } catch (error) {
+        console.error('Error accessing media devices:', error);
     }
-  }
+}
+// Create and establish a WebRTC connection
+async function createConnection() {
+  peerConnection = new RTCPeerConnection();
 
-  client.leave();
+  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+  peerConnection.ontrack = event => {
+      remoteVideo.srcObject = event.streams[0];
+  };
+
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+
+  // Send the offer to the other peer through your preferred signaling method
 }
 
-async function toggleAudio() {
-  if (localStream) {
-    isAudioMuted = !isAudioMuted;
-    if (isAudioMuted) {
-      localStream.muteAudio();
-    } else {
-      localStream.unmuteAudio();
+// Handle the answer from the other peer
+async function handleAnswer(answer) {
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+// Handle incoming ice candidates
+async function handleIceCandidate(candidate) {
+  await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+}
+
+async function sendMessage(message) {
+    // Simulate sending a message by appending it to the chatMessages div
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    chatMessages.appendChild(messageElement);
+}
+
+sendButton.addEventListener('click', () => {
+    const message = chatInput.value;
+    if (message.trim() !== '') {
+        sendMessage(message);
+        chatInput.value = '';
     }
-    toggleAudioButton.textContent = isAudioMuted ? 'Unmute Audio' : 'Mute Audio';
-  }
-}
+});
 
-async function toggleVideo() {
-  if (localStream) {
-    isVideoMuted = !isVideoMuted;
-    if (isVideoMuted) {
-      localStream.muteVideo();
-    } else {
-      localStream.unmuteVideo();
-    }
-    toggleVideoButton.textContent = isVideoMuted ? 'Unmute Video' : 'Mute Video';
-  }
-}
+toggleVideoButton.addEventListener('click', () => {
+    isVideoEnabled = !isVideoEnabled;
+    getMediaStream();
+});
 
-function addRemoteVideo(streamId) {
-  const remoteVideoElement = document.createElement('div');
-  remoteVideoElement.id = `remote_${streamId}`;
-  remoteVideoElement.className = 'remote-video';
-  remoteVideosContainer.appendChild(remoteVideoElement);
-  remoteStreams[streamId].play(`remote_${streamId}`);
-}
+toggleMicrophoneButton.addEventListener('click', () => {
+    isMicrophoneEnabled = !isMicrophoneEnabled;
+    getMediaStream();
+});
 
-function removeRemoteVideo(streamId) {
-  const remoteVideoElement = document.getElementById(`remote_${streamId}`);
-  if (remoteVideoElement) {
-    remoteVideoElement.parentNode.removeChild(remoteVideoElement);
-    delete remoteStreams[streamId];
-  }
-}
+// Set up the media stream when the page loads
+window.onload = async () => {
+    await getMediaStream();
+    await createConnection();
+};
