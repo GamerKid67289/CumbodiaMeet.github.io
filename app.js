@@ -1,5 +1,5 @@
 const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
+const remoteVideoContainer = document.getElementById('remoteVideoContainer');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const sendButton = document.getElementById('sendButton');
@@ -7,7 +7,7 @@ const toggleVideoButton = document.getElementById('toggleVideo');
 const toggleMicrophoneButton = document.getElementById('toggleMicrophone');
 
 let localStream;
-let peerConnection;
+let peerConnections = {};
 let isVideoEnabled = true;
 let isMicrophoneEnabled = true;
 
@@ -21,33 +21,56 @@ async function getMediaStream() {
         console.error('Error accessing media devices:', error);
     }
 }
-// Create and establish a WebRTC connection
-async function createConnection() {
-  peerConnection = new RTCPeerConnection();
 
-  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+async function createConnection(targetSocketId) {
+    const peerConnection = new RTCPeerConnection();
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
-  peerConnection.ontrack = event => {
-      remoteVideo.srcObject = event.streams[0];
-  };
+    peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+            sendIceCandidate(targetSocketId, event.candidate);
+        }
+    };
 
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
+    peerConnection.ontrack = event => {
+        const remoteVideo = document.createElement('video');
+        remoteVideo.srcObject = event.streams[0];
+        remoteVideo.autoplay = true;
+        remoteVideoContainer.appendChild(remoteVideo);
+    };
 
-  // Send the offer to the other peer through your preferred signaling method
+    peerConnection.ondatachannel = event => {
+        const dataChannel = event.channel;
+        setupDataChannel(dataChannel, targetSocketId);
+    };
+
+    // Create an offer
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    sendOffer(targetSocketId, offer);
+    peerConnections[targetSocketId] = peerConnection;
 }
 
-// Handle the answer from the other peer
-async function handleAnswer(answer) {
-  await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+async function handleAnswer(targetSocketId, answer) {
+    await peerConnections[targetSocketId].setRemoteDescription(new RTCSessionDescription(answer));
 }
 
-// Handle incoming ice candidates
-async function handleIceCandidate(candidate) {
-  await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+async function handleIceCandidate(targetSocketId, candidate) {
+    await peerConnections[targetSocketId].addIceCandidate(new RTCIceCandidate(candidate));
 }
 
-async function sendMessage(message) {
+function sendOffer(targetSocketId, offer) {
+    // Simulate sending offer through an HTTP request
+    // In a real-world scenario, use your preferred server for signaling
+}
+
+function sendIceCandidate(targetSocketId, candidate) {
+    // Simulate sending ICE candidate through an HTTP request
+    // In a real-world scenario, use your preferred server for signaling
+}
+
+function sendMessage(message) {
     // Simulate sending a message by appending it to the chatMessages div
     const messageElement = document.createElement('div');
     messageElement.textContent = message;
@@ -75,5 +98,5 @@ toggleMicrophoneButton.addEventListener('click', () => {
 // Set up the media stream when the page loads
 window.onload = async () => {
     await getMediaStream();
-    await createConnection();
+    // Connect to peers here (based on your signaling method)
 };
