@@ -28,6 +28,7 @@ async function startCall() {
     // ... Additional socket.io code for handling connections and calls
   } catch (error) {
     console.error('Error accessing media devices:', error);
+    alert('Camera and microphone access is required to use this app.');
   }
 }
 
@@ -35,11 +36,11 @@ function addVideoStream(stream, isLocal) {
   const video = document.createElement('video');
   video.srcObject = stream;
   video.autoplay = true;
-  
+
   const container = document.createElement('div');
   container.classList.add('video-container');
   container.appendChild(video);
-  
+
   videosContainer.appendChild(container);
 
   if (!isLocal) {
