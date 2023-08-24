@@ -2,12 +2,15 @@
 <html>
 <head>
     <title>Cumbodia Meet</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <div id="localVideo"></div>
-    <div id="remoteVideos"></div>
-    <button id="toggleVideo">Toggle Video</button>
-    <button id="toggleAudio">Toggle Audio</button>
+    <div id="localVideo" class="video-container"></div>
+    <div id="remoteVideos" class="video-container"></div>
+    <div class="controls">
+        <button id="toggleVideo" class="control-button">Toggle Video</button>
+        <button id="toggleAudio" class="control-button">Toggle Audio</button>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
