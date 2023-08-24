@@ -94,6 +94,7 @@ let toggleCamera = async (e) => {
         await localTracks[1].setMuted(true)
         e.target.innerText = 'Camera off'
         e.target.style.backgroundColor = '#EE4B2B'
+        e.target.innerText = "be right back"
     }
 }
 
