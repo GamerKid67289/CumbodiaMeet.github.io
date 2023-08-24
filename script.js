@@ -1,77 +1,27 @@
-const videosContainer = document.getElementById('videos');
+const localVideo = document.getElementById('localVideo');
+const remoteVideos = document.getElementById('remoteVideos');
 const toggleVideoButton = document.getElementById('toggleVideo');
 const toggleAudioButton = document.getElementById('toggleAudio');
 
-const configuration = {
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-};
-
-const constraints = {
-  video: true,
-  audio: true,
-};
-
 let localStream;
-const peers = [];
+const constraints = { video: true, audio: true };
 
-async function startCall() {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia(constraints);
-    addVideoStream(localStream, true);
+// Get user media and display it on the local video element
+navigator.mediaDevices.getUserMedia(constraints)
+    .then(stream => {
+        localStream = stream;
+        localVideo.srcObject = stream;
+    })
+    .catch(error => console.error('Error accessing user media:', error));
 
-    // Handle incoming calls
-    socket.on('call', (callerId) => {
-      const peerConnection = createPeerConnection(callerId, true);
-      peers.push({ id: callerId, connection: peerConnection });
-    });
-
-    // ... Additional socket.io code for handling connections and calls
-  } catch (error) {
-    console.error('Error accessing media devices:', error);
-    alert('Camera and microphone access is required to use this app.');
-  }
-}
-
-function addVideoStream(stream, isLocal) {
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.autoplay = true;
-
-  const container = document.createElement('div');
-  container.classList.add('video-container');
-  container.appendChild(video);
-
-  videosContainer.appendChild(container);
-
-  if (!isLocal) {
-    // Handle remote stream
-  }
-}
-
-function createPeerConnection(peerId, isCaller) {
-  const peerConnection = new RTCPeerConnection(configuration);
-
-  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-  peerConnection.ontrack = (event) => {
-    addVideoStream(event.streams[0], false);
-  };
-
-  // ... Additional peer connection setup
-
-  return peerConnection;
-}
-
+// Toggle video stream
 toggleVideoButton.addEventListener('click', () => {
-  localStream.getVideoTracks().forEach(track => {
-    track.enabled = !track.enabled;
-  });
+    const videoTrack = localStream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
 });
 
+// Toggle audio stream
 toggleAudioButton.addEventListener('click', () => {
-  localStream.getAudioTracks().forEach(track => {
-    track.enabled = !track.enabled;
-  });
+    const audioTrack = localStream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
 });
-
-startCall();
