@@ -1,44 +1,76 @@
-const localVideo = document.getElementById('local-video');
-const remoteContainer = document.getElementById('remote-container');
-const toggleCameraButton = document.getElementById('toggle-camera');
-const toggleMicButton = document.getElementById('toggle-mic');
+const videosContainer = document.getElementById('videos');
+const toggleVideoButton = document.getElementById('toggleVideo');
+const toggleAudioButton = document.getElementById('toggleAudio');
+
+const configuration = {
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+};
+
+const constraints = {
+  video: true,
+  audio: true,
+};
 
 let localStream;
-let cameraOn = true;
-let micOn = true;
+const peers = [];
 
-async function startLocalStream() {
-    try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: cameraOn, audio: micOn });
-        localVideo.srcObject = localStream;
-    } catch (error) {
-        console.error('Error accessing media devices:', error);
-    }
+async function startCall() {
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    addVideoStream(localStream, true);
+
+    // Handle incoming calls
+    socket.on('call', (callerId) => {
+      const peerConnection = createPeerConnection(callerId, true);
+      peers.push({ id: callerId, connection: peerConnection });
+    });
+
+    // ... Additional socket.io code for handling connections and calls
+  } catch (error) {
+    console.error('Error accessing media devices:', error);
+  }
 }
 
-// Toggle camera
-toggleCameraButton.addEventListener('click', () => {
-    cameraOn = !cameraOn;
-    localStream.getVideoTracks()[0].enabled = cameraOn;
-});
+function addVideoStream(stream, isLocal) {
+  const video = document.createElement('video');
+  video.srcObject = stream;
+  video.autoplay = true;
+  
+  const container = document.createElement('div');
+  container.classList.add('video-container');
+  container.appendChild(video);
+  
+  videosContainer.appendChild(container);
 
-// Toggle microphone
-toggleMicButton.addEventListener('click', () => {
-    micOn = !micOn;
-    localStream.getAudioTracks()[0].enabled = micOn;
-});
-
-// Function to add a new remote video
-function addRemoteVideo(stream) {
-    const remoteVideo = document.createElement('video');
-    remoteVideo.srcObject = stream;
-    remoteVideo.autoplay = true;
-    remoteContainer.appendChild(remoteVideo);
+  if (!isLocal) {
+    // Handle remote stream
+  }
 }
 
-// Handle signaling and peer connections - you need to implement this part
+function createPeerConnection(peerId, isCaller) {
+  const peerConnection = new RTCPeerConnection(configuration);
 
-// Call this function to add a remote stream
-// For example: addRemoteVideo(remoteStream);
+  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
-startLocalStream();
+  peerConnection.ontrack = (event) => {
+    addVideoStream(event.streams[0], false);
+  };
+
+  // ... Additional peer connection setup
+
+  return peerConnection;
+}
+
+toggleVideoButton.addEventListener('click', () => {
+  localStream.getVideoTracks().forEach(track => {
+    track.enabled = !track.enabled;
+  });
+});
+
+toggleAudioButton.addEventListener('click', () => {
+  localStream.getAudioTracks().forEach(track => {
+    track.enabled = !track.enabled;
+  });
+});
+
+startCall();
