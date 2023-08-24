@@ -1,4 +1,4 @@
-const APP_ID = "d3feebc4cad44470bfaac5362ffe547f"
+const APP_ID = "25540f7394b841d29dfe60b86c43a5eb"
 const TOKEN = "007eJxTYPjyruKOn2Ot6JfLG+7ev+AeO+VjUeDn7bMU6yOvWb8NFylVYEgxTktNTUo2SU5MMTExMTdISktMTDY1NjNKS0s1NTFP27XiWUpDICPDiTmeTIwMEAjiczO4JeZm5lT6pqaWFDMwAACqhybv"
 const CHANNEL = "FamilyMeets"
 
