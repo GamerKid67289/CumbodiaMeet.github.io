@@ -49,41 +49,6 @@ button {
     margin-top: 0.5em;
 }
 
-/* Chat Interface Styles */
-#chat {
-    background-color: #203A49;
-    border: 2px solid black;
-    padding: 10px;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-#chat-messages {
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: #fff;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-}
-
-#chat-input {
-    width: 80%;
-    padding: 5px;
-    border: none;
-    border-bottom: 2px solid #ccc;
-    margin-right: 10px;
-}
-
-#send-btn {
-    background-color: cadetblue;
-    color: #fff;
-    padding: 5px 10px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-}
-
 @media screen and (max-width: 1400px) {
     #video-streams {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
