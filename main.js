@@ -1,4 +1,4 @@
-const APP_ID = "25540f7394b841d29dfe60b86c43a5eb"
+zconst APP_ID = "25540f7394b841d29dfe60b86c43a5eb"
 const TOKEN = "007eJxTYJjt17nppU3GDg6mkImXnZ7u/+p/72zT0jbBJYd+3QsqevhTgcHI1NTEIM3c2NIkycLEMMXIMiUt1cwgycIs2cQ40TQ1SSjDJLUhkJHBdr0aKyMDBIL4HAzOpblJ+SmZiQwMAH+jInA="
 const CHANNEL = "Cumbodia"
 
@@ -94,43 +94,3 @@ let toggleCamera = async (e) => {
         e.target.style.backgroundColor = '#EE4B2B'
     }
 }
-
-// Add the following code for the chat feature
-
-// Get references to chat elements
-const chatMessages = document.getElementById('chat-messages')
-const chatInput = document.getElementById('chat-input')
-const sendBtn = document.getElementById('send-btn')
-
-// Function to send a chat message
-let sendChatMessage = (message) => {
-    const chatMessage = {
-        sender: 'You', // Replace 'You' with the actual sender name
-        message: message
-    };
-
-    displayChatMessage(chatMessage);
-
-    // Here, you can send the message to other users via your video chat platform's API
-    // Implement this part depending on your video chat platform
-    // Replace the following line with the actual code to send the message.
-    sendChatMessageToOtherUsers(chatMessage.message);
-};
-
-// Function to display a chat message in the chat interface
-let displayChatMessage = (chatMessage) => {
-    const messageDiv = document.createElement('div');
-    messageDiv.innerText = `${chatMessage.sender}: ${chatMessage.message}`;
-    chatMessages.appendChild(messageDiv);
-};
-
-// Event listener for sending a chat message
-sendBtn.addEventListener('click', () => {
-    const message = chatInput.value;
-    if (message.trim() !== '') {
-        sendChatMessage(message);
-        chatInput.value = '';
-    }
-});
-
-// ... Your existing code ...
