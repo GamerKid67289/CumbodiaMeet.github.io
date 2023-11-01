@@ -1,5 +1,5 @@
 const APP_ID = "25540f7394b841d29dfe60b86c43a5eb"
-const TOKEN = "007eJxTYFDvsflydFfoCs3bK6T/Pdz3dZ6l4rd/rgoHlPk+N7/WfZekwGBkampikGZubGmSZGFimGJkmZKWamaQZGGWbGKcaJqaNGG5XWpDICPD6ep9DIxQCOJzMDiX5iblp2QmMjAAAIvGI2I="
+const TOKEN = "007eJxTYDicKnLE5/6nrtfxcZuz/dm5vCduSGpQ192im5L7V3a9YLsCg4WFiZlZYqq5uXmSiUmaYWJiiklKkqlJsmFSSpK5haVZ3jan1IZARoa2b7nMjAwQCOJzMDiX5iblp2QmMjAAAJttIG0="
 const CHANNEL = "Cumbodia"
 
 const client = AgoraRTC.createClient({mode:'rtc', codec:'vp8'})
